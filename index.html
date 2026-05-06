@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cake Venture 🎂</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --brown: #3b1f14;
+      --brown-light: #5c3222;
+      --cream: #fff7f2;
+      --peach: #fde8d8;
+      --gold: #d4a056;
+      --red: #c0392b;
+      --orange: #e67e22;
+      --white: #ffffff;
+      --shadow: 0 20px 60px rgba(59,31,20,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* ========== CURSOR ========== */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99999;
+      transition: transform 0.15s ease;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-follower {
+      width: 36px; height: 36px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 99998;
+      transition: transform 0.35s ease, opacity 0.3s;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+    }
+
+    /* ========== LOADER ========== */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--brown);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 99999;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-cake {
+      font-size: 64px;
+      animation: cakeBounce 0.6s ease infinite alternate;
+    }
+    @keyframes cakeBounce {
+      from { transform: translateY(0) scale(1); }
+      to   { transform: translateY(-14px) scale(1.08); }
+    }
+    .loader-text {
+      font-family: 'Playfair Display', serif;
+      color: var(--gold);
+      font-size: 28px;
+      margin-top: 16px;
+      letter-spacing: 3px;
+    }
+    .loader-bar {
+      width: 200px; height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+    .loader-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 10px;
+      animation: loadFill 1.8s ease forwards;
+    }
+    @keyframes loadFill { from { width: 0; } to { width: 100%; } }
+
+    /* ========== HEADER ========== */
+    header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: rgba(59,31,20,0.97);
+      backdrop-filter: blur(12px);
+      color: white;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 40px;
+      z-index: 2000;
+      border-bottom: 1px solid rgba(212,160,86,0.2);
+      transition: padding 0.3s;
+    }
+    header.scrolled { padding: 10px 40px; }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+    .logo span { color: white; font-style: normal; }
+
+    nav { display: flex; gap: 28px; align-items: center; }
+    nav a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.3s;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 2px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+    nav a:hover { color: var(--gold); }
+    nav a:hover::after { width: 100%; }
+
+    .cart-btn {
+      position: relative;
+      background: var(--gold);
+      color: var(--brown);
+      padding: 10px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none;
+    }
+    .cart-btn:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(212,160,86,0.4); }
+
+    .cart-count {
+      position: absolute; top: -6px; right: -6px;
+      background: var(--red);
+      color: white; font-size: 10px; font-weight: 700;
+      padding: 2px 7px; border-radius: 50%;
+      min-width: 20px; text-align: center;
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0); }
+      70% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* ========== HERO ========== */
+    .hero {
+      margin-top: 65px;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, #1a0a06 0%, #3b1f14 40%, #5c3222 100%);
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url('./background image.jpg') center/cover no-repeat;
+      opacity: 0.25;
+    }
+
+    /* floating particles */
+    .particles {
+      position: absolute; inset: 0;
+      overflow: hidden; pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      font-size: 20px;
+      animation: floatParticle linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatParticle {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.6; }
+      90%  { opacity: 0.4; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; color: white;
+      padding: 20px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(212,160,86,0.15);
+      border: 1px solid rgba(212,160,86,0.4);
+      color: var(--gold);
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      border-radius: 50px;
+      margin-bottom: 24px;
+      animation: fadeSlideUp 0.8s ease both;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 900;
+      line-height: 1.05;
+      animation: fadeSlideUp 0.8s ease 0.2s both;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: 0.7;
+      margin: 20px 0 36px;
+      font-weight: 300;
+      animation: fadeSlideUp 0.8s ease 0.4s both;
+    }
+
+    .hero-btns {
+      display: flex; gap: 16px; justify-content: center;
+      animation: fadeSlideUp 0.8s ease 0.6s both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), #b8842a);
+      color: var(--brown);
+      padding: 15px 36px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 8px 30px rgba(212,160,86,0.4);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(212,160,86,0.5); }
+
+    .btn-outline {
+      background: transparent;
+      color: white;
+      border: 2px solid rgba(255,255,255,0.4);
+      padding: 14px 36px;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 15px;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .btn-outline:hover { border-color: var(--gold); background: rgba(212,160,86,0.1); }
+
+    .scroll-hint {
+      position: absolute; bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.5);
+      font-size: 12px; letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      animation: fadeSlideUp 0.8s ease 1s both;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.5), transparent);
+      animation: scrollLine 1.5s ease infinite;
+    }
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      50.01% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ========== STATS BAND ========== */
+    .stats-band {
+      background: var(--brown);
+      padding: 30px 40px;
+      display: flex; justify-content: center; gap: 80px;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; color: white; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px; font-weight: 900;
+      color: var(--gold);
+    }
+    .stat-label { font-size: 12px; opacity: 0.6; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+
+    /* ========== ABOUT ========== */
+    .about {
+      padding: 100px 40px;
+      max-width: 1100px; margin: auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center;
+    }
+    @media(max-width:768px) { .about { grid-template-columns: 1fr; gap: 40px; padding: 60px 24px; } }
+
+    .about-visual {
+      position: relative;
+    }
+    .about-circle {
+      width: 340px; height: 340px;
+      background: linear-gradient(135deg, var(--brown), var(--brown-light));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 120px;
+      box-shadow: var(--shadow);
+      position: relative;
+      margin: auto;
+      animation: slowSpin 20s linear infinite;
+    }
+    @keyframes slowSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    .about-circle-inner { animation: slowSpin 20s linear infinite reverse; }
+
+    .about-tag {
+      position: absolute;
+      background: var(--gold);
+      color: var(--brown);
+      font-weight: 700;
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 50px;
+    }
+    .about-tag:nth-child(2) { top: 10px; right: -10px; }
+    .about-tag:nth-child(3) { bottom: 30px; left: -20px; }
+
+    .about-text .eyebrow {
+      font-size: 11px; letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .about-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4vw, 50px);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .about-text p { color: #666; line-height: 1.8; margin-bottom: 16px; font-size: 16px; }
+    .about-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .chip {
+      background: var(--peach);
+      border: 1px solid rgba(212,160,86,0.3);
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      color: var(--brown);
+      font-weight: 500;
+    }
+
+    /* ========== SECTION HEADINGS ========== */
+    .section-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-header .eyebrow {
+      font-size: 11px; letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 4vw, 52px);
+    }
+    .section-divider {
+      width: 60px; height: 3px;
+      background: linear-gradient(to right, var(--gold), var(--orange));
+      border-radius: 10px;
+      margin: 16px auto 0;
+    }
+
+    /* ========== MENU ========== */
+    #menu {
+      padding: 100px 40px;
+      background: white;
+    }
+    @media(max-width:768px) { #menu { padding: 60px 16px; } }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    @media(max-width:900px) { .menu-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:560px) { .menu-grid { grid-template-columns: 1fr; } }
+
+    /* CARD */
+    .card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 4px 30px rgba(59,31,20,0.08);
+      transition: transform 0.35s cubic-bezier(.23,1,.32,1), box-shadow 0.35s;
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(59,31,20,0.18);
+    }
+
+    .card-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+    }
+    .card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .card:hover img { transform: scale(1.08); }
+
+    .card-badge {
+      position: absolute; top: 14px; left: 14px;
+      background: var(--gold);
+      color: var(--brown);
+      font-size: 11px; font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card-body { padding: 20px; }
+
+    .card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .card select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--peach);
+      border-radius: 12px;
+      background: var(--cream);
+      color: var(--brown);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      margin-bottom: 14px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M6 8 0 0h12z' fill='%233b1f14'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+    }
+    .card select:focus { border-color: var(--gold); }
+
+    .qty-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 6px 10px;
+    }
+    .qty-row .qty-label { font-size: 13px; color: #888; }
+    .qty-controls-menu {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .qty-btn {
+      width: 32px; height: 32px;
+      border: none; border-radius: 8px;
+      background: var(--brown); color: white;
+      font-size: 18px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s, transform 0.1s;
+      flex-shrink: 0;
+    }
+    .qty-btn:hover { background: var(--brown-light); transform: scale(1.1); }
+    .qty-num { font-weight: 700; font-size: 16px; min-width: 20px; text-align: center; }
+
+    .add-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #e67e22, var(--red));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .add-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(192,57,43,0.3);
+    }
+    .add-btn:active { transform: scale(0.97); }
+
+    /* brownie sub-select */
+    .brownie-type-row {
+      display: flex; gap: 8px; margin-bottom: 10px;
+    }
+    .brownie-type-btn {
+      flex: 1; padding: 8px;
+      border: 1.5px solid var(--peach);
+      border-radius: 10px;
+      background: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--brown);
+    }
+    .brownie-type-btn.active {
+      border-color: var(--gold);
+      background: rgba(212,160,86,0.12);
+      font-weight: 600;
+    }
+
+    /* ========== INSTAGRAM ========== */
+    .insta-section {
+      padding: 100px 40px;
+      text-align: center;
+      background: var(--cream);
+    }
+    @media(max-width:768px) { .insta-section { padding: 60px 16px; } }
+
+    .insta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 900px;
+      margin: 36px auto 36px;
+    }
+    @media(max-width:560px) { .insta-grid { grid-template-columns: repeat(2,1fr); } }
+
+    .insta-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      aspect-ratio: 1;
+      cursor: pointer;
+    }
+    .insta-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .insta-item:hover img { transform: scale(1.1); }
+    .insta-overlay {
+      position: absolute; inset: 0;
+      background: rgba(59,31,20,0.55);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 28px;
+    }
+    .insta-item:hover .insta-overlay { opacity: 1; }
+
+    .insta-follow-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      color: white;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 8px 30px rgba(220,39,67,0.3);
+    }
+    .insta-follow-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(220,39,67,0.4); }
+
+    /* ========== MANUAL ORDER ========== */
+    #order {
+      padding: 100px 40px;
+      background: linear-gradient(135deg, var(--brown) 0%, #1a0a06 100%);
+      color: white;
+    }
+    @media(max-width:768px) { #order { padding: 60px 16px; } }
+
+    #order .section-header h2 { color: white; }
+    #order .section-header .eyebrow { color: var(--gold); }
+
+    .order-form {
+      max-width: 560px;
+      margin: auto;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 12px; letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      font-weight: 500;
+    }
+
+    .order-form input,
+    .order-form textarea,
+    .order-form select {
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
+      appearance: none;
+    }
+    .order-form input::placeholder,
+    .order-form textarea::placeholder { color: rgba(255,255,255,0.35); }
+    .order-form input:focus,
+    .order-form textarea:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
+
+    .order-form textarea { resize: none; height: 110px; }
+
+    .file-upload-area {
+      border: 2px dashed rgba(212,160,86,0.4);
+      border-radius: 14px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .file-upload-area:hover { border-color: var(--gold); background: rgba(212,160,86,0.05); }
+    .file-upload-area .upload-icon { font-size: 32px; margin-bottom: 8px; }
+    .file-upload-area p { color: rgba(255,255,255,0.5); font-size: 13px; }
+    .file-upload-area input { display: none; }
+    #file-names { font-size: 13px; color: var(--gold); margin-top: 8px; }
+
+    .send-btn {
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold), #b8842a);
+      color: var(--brown);
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 8px 30px rgba(212,160,86,0.3);
+    }
+    .send-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(212,160,86,0.4); }
+
+    /* ========== CART PANEL ========== */
+    .cart-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 2999;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .cart-overlay.active { opacity: 1; pointer-events: all; }
+
+    .cart-panel {
+      position: fixed; top: 0; right: -420px;
+      width: 380px; height: 100%;
+      background: white;
+      z-index: 3000;
+      transition: right 0.4s cubic-bezier(.23,1,.32,1);
+      display: flex; flex-direction: column;
+      box-shadow: -10px 0 50px rgba(59,31,20,0.2);
+    }
+    .cart-panel.open { right: 0; }
+
+    .cart-header {
+      background: var(--brown);
+      color: white;
+      padding: 20px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cart-header h3 { font-family: 'Playfair Display', serif; font-size: 22px; }
+    .cart-close-btn {
+      background: rgba(255,255,255,0.15);
+      border: none; color: white;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      font-size: 18px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cart-close-btn:hover { background: rgba(255,255,255,0.25); }
+
+    .cart-items { flex: 1; overflow-y: auto; padding: 20px; }
+
+    .cart-item {
+      border: 1px solid #f0e6df;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex; gap: 12px; align-items: flex-start;
+      transition: transform 0.2s;
+      animation: slideInRight 0.3s ease both;
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .cart-item-emoji {
+      font-size: 32px;
+      background: var(--cream);
+      border-radius: 10px;
+      width: 54px; height: 54px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cart-item-details { flex: 1; }
+    .cart-item-name { font-weight: 600; font-size: 15px; }
+    .cart-item-sub { font-size: 12px; color: #999; margin: 2px 0 8px; }
+    .cart-item-price { font-weight: 700; color: var(--brown); }
+    .cart-item-controls {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 8px;
+    }
+    .cc-btn {
+      width: 28px; height: 28px;
+      border: 1.5px solid #ddd;
+      border-radius: 7px;
+      background: white; cursor: pointer;
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .cc-btn:hover { border-color: var(--brown); background: var(--brown); color: white; }
+    .cc-qty { font-weight: 700; font-size: 15px; }
+    .rm-btn {
+      background: #fff0ef;
+      border: none;
+      color: var(--red);
+      padding: 4px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      cursor: pointer;
+      margin-left: auto;
+      transition: background 0.2s;
+    }
+    .rm-btn:hover { background: #ffd5d1; }
+
+    .cart-footer {
+      padding: 20px 24px;
+      border-top: 1px solid #f0e6df;
+      background: white;
+    }
+    .cart-total {
+      display: flex; justify-content: space-between;
+      font-weight: 700; font-size: 18px;
+      margin-bottom: 16px;
+    }
+    .cart-total span:last-child { color: var(--brown); font-family: 'Playfair Display', serif; font-size: 22px; }
+    .checkout-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: transform 0.2s, box-shadow 0.3s;
+      box-shadow: 0 8px 24px rgba(37,211,102,0.3);
+    }
+    .checkout-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(37,211,102,0.4); }
+
+    /* ========== TOAST ========== */
+    .toast {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--brown);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 50px;
+      font-size: 15px; font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(.23,1,.32,1), opacity 0.3s;
+      white-space: nowrap;
+      box-shadow: 0 10px 40px rgba(59,31,20,0.3);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ========== FOOTER ========== */
+    footer {
+      background: var(--brown);
+      color: white;
+      padding: 60px 40px 40px;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 60px;
+      max-width: 1000px;
+      margin: auto 0;
+    }
+    @media(max-width:768px) { .footer-grid { grid-template-columns: 1fr; gap: 32px; } }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-style: italic;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+    .footer-about { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 1.8; }
+    .footer-heading { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .footer-link { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 14px; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-link:hover { color: var(--gold); }
+    .footer-contact { color: rgba(255,255,255,0.6); font-size: 14px; line-height: 2; }
+    .footer-contact a { color: var(--gold); text-decoration: none; transition: opacity 0.2s; }
+    .footer-contact a:hover { opacity: 0.8; }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 48px;
+      padding-top: 24px;
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+    }
+
+    /* ========== SCROLL REVEAL ========== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ========== RIPPLE ========== */
+    .ripple-container { position: relative; overflow: hidden; }
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      animation: rippleAnim 0.6s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes rippleAnim {
+      from { width: 0; height: 0; opacity: 1; }
+      to   { width: 200px; height: 200px; opacity: 0; margin: -100px; }
+    }
+
+    /* empty cart state */
+    .cart-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 200px; color: #ccc;
+      font-size: 14px;
+    }
+    .cart-empty span { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- CURSOR -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursor-follower"></div>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="loader-cake">🎂</div>
+    <div class="loader-text">Cake Venture</div>
+    <div class="loader-bar"><div class="loader-fill"></div></div>
+  </div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <div class="logo">Cake <span>Venture</span></div>
+    <nav>
+      <a href="#menu">Menu</a>
+      <a href="#order">Order</a>
+      <a href="#insta">Gallery</a>
+      <button class="cart-btn ripple-container" onclick="toggleCart()">
+        🛒 <span id="cart-count" class="cart-count">0</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">✨ Fresh · Homemade · Premium</div>
+      <h1>Crafted with <em>love & butter</em></h1>
+      <p class="hero-sub">Small-batch cakes baked fresh for every celebration 🎂</p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn-primary">Explore Menu</a>
+        <a href="#order" class="btn-outline">Custom Order</a>
+      </div>
+    </div>
+
+    <div class="scroll-hint">Scroll</div>
+  </section>
+
+ 
+
+  <!-- ABOUT -->
+  <section class="about reveal">
+    <div class="about-visual">
+      <div class="about-circle">
+        <span class="about-circle-inner">🎂</span>
+      </div>
+      <div class="about-tag">Less Cream 🤍</div>
+      <div class="about-tag">More Cake 🍰</div>
+    </div>
+    <div class="about-text">
+      <p class="eyebrow">Our Story</p>
+      <h2>A little piece of <em style="font-style:italic;color:var(--gold)">home</em> in every bite</h2>
+      <p>At Cake Venture, every cake is baked in small batches with love. No shortcuts, no compromises — just pure, honest flavor that tastes exactly like it came from your mother's kitchen.</p>
+      <p>We follow a <strong>"less cream, more cake"</strong> philosophy — soft, rich, and perfectly balanced in every slice. From celebrations to everyday cravings, we're here to make your moments sweeter. 🎉</p>
+      <div class="about-chips">
+        <span class="chip">🧈 Homemade</span>
+        <span class="chip">🌿 No Preservatives</span>
+        <span class="chip">🍰 Small Batches</span>
+        <span class="chip">💛 Made with Love</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu">
+    <div class="section-header reveal">
+      <span class="eyebrow">What We Bake</span>
+      <h2>Our Menu</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="menu-grid">
+
+      <!-- CHOCOLATE CAKE -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./chocolate_-cake.webp" alt="Chocolate Cake">
+          <div class="card-badge">Bestseller</div>
+        </div>
+        <div class="card-body">
+          <h3>Chocolate Cake 🍫</h3>
+          <select id="choco">
+            <option value="500">½ KG — ₹500</option>
+            <option value="950">1 KG — ₹950</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('chocoQty',-1)">−</button>
+              <span class="qty-num" id="chocoQty">1</span>
+              <button class="qty-btn" onclick="qty('chocoQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="add('Chocolate Cake','🍫','choco','chocoQty')">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- RED VELVET -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./Red velvet.jpg" alt="Red Velvet">
+          <div class="card-badge">Fan Favourite</div>
+        </div>
+        <div class="card-body">
+          <h3>Red Velvet 🍷</h3>
+          <select id="red">
+            <option value="450">½ KG — ₹450</option>
+            <option value="850">1 KG — ₹850</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('redQty',-1)">−</button>
+              <span class="qty-num" id="redQty">1</span>
+              <button class="qty-btn" onclick="qty('redQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="add('Red Velvet','🍷','red','redQty')">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- BLACK FOREST -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./black-forest-cake.jpeg" alt="Black Forest">
+        </div>
+        <div class="card-body">
+          <h3>Black Forest 🍒</h3>
+          <select id="black">
+            <option value="450">½ KG — ₹450</option>
+            <option value="850">1 KG — ₹850</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('blackQty',-1)">−</button>
+              <span class="qty-num" id="blackQty">1</span>
+              <button class="qty-btn" onclick="qty('blackQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="add('Black Forest','🍒','black','blackQty')">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- BUTTERSCOTCH -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./Butterscotch.webp" alt="Butterscotch Cake">
+          <div class="card-badge">New</div>
+        </div>
+        <div class="card-body">
+          <h3>Butterscotch Cake 🍮</h3>
+          <select id="butter">
+            <option value="400">½ KG — ₹400</option>
+            <option value="750">1 KG — ₹750</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('butterQty',-1)">−</button>
+              <span class="qty-num" id="butterQty">1</span>
+              <button class="qty-btn" onclick="qty('butterQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="add('Butterscotch Cake','🍮','butter','butterQty')">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- BROWNIES -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./crinkletop browniee.jpg" alt="Brownies">
+          <div class="card-badge">Hot Pick</div>
+        </div>
+        <div class="card-body">
+          <h3>Brownies 🍫</h3>
+
+          <!-- Brownie Type Toggle -->
+          <div class="brownie-type-row">
+            <button class="brownie-type-btn active" id="bt-crinkle" onclick="selectBrownieType('Crinkle Top')">Crinkle Top</button>
+            <button class="brownie-type-btn" id="bt-fudgy" onclick="selectBrownieType('Fudgy')">Fudgy</button>
+          </div>
+          <input type="hidden" id="brownie-type-val" value="Crinkle Top">
+
+          <select id="brownie">
+            <option value="250">3 pcs — ₹250</option>
+            <option value="500">6 pcs — ₹500</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('brownieQty',-1)">−</button>
+              <span class="qty-num" id="brownieQty">1</span>
+              <button class="qty-btn" onclick="qty('brownieQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="addBrownie()">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- CAKE POPS -->
+      <div class="card reveal">
+        <div class="card-img-wrap">
+          <img src="./cakepops.jpg" alt="Cake Pops">
+        </div>
+        <div class="card-body">
+          <h3>Cake Pops 🍭</h3>
+          <!-- Flavor shows the selected flavor name in cart -->
+          <select id="pop" onchange="updatePopLabel()">
+            <option value="20" data-flavor="Chocolate">Chocolate Cake Pop — ₹20</option>
+            <option value="20" data-flavor="Vanilla">Vanilla Cake Pop — ₹20</option>
+            <option value="20" data-flavor="Red Velvet">Red Velvet Cake Pop — ₹20</option>
+          </select>
+          <div class="qty-row">
+            <span class="qty-label">Quantity</span>
+            <div class="qty-controls-menu">
+              <button class="qty-btn" onclick="qty('popQty',-1)">−</button>
+              <span class="qty-num" id="popQty">1</span>
+              <button class="qty-btn" onclick="qty('popQty',1)">+</button>
+            </div>
+          </div>
+          <button class="add-btn ripple-container" onclick="addCakePop()">Add to Cart</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- INSTAGRAM -->
+  <section class="insta-section reveal" id="insta">
+    <div class="section-header">
+      <span class="eyebrow">Stay Connected</span>
+      <h2>Follow us on Instagram 📸</h2>
+      <div class="section-divider"></div>
+    </div>
+
+    <div class="insta-grid">
+      <div class="insta-item"><img src="./insta1.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+      <div class="insta-item"><img src="./insta2.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+      <div class="insta-item"><img src="./insta3.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+      <div class="insta-item"><img src="./insta4.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+      <div class="insta-item"><img src="./insta5.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+      <div class="insta-item"><img src="./insta6.jpeg" alt=""><div class="insta-overlay">❤️</div></div>
+    </div>
+
+    <a href="https://www.instagram.com/" target="_blank" class="insta-follow-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      Follow @cake.venture1
+    </a>
+  </section>
+
+  <!-- MANUAL ORDER -->
+  <section id="order">
+    <div class="section-header reveal">
+      <span class="eyebrow">Custom Creations</span>
+      <h2>Place a Manual Order</h2>
+      <div class="section-divider" style="background:linear-gradient(to right,var(--gold),#e67e22);"></div>
+    </div>
+
+    <form class="order-form reveal" onsubmit="sendManualOrder(); return false;">
+      <div class="form-group">
+        <label class="form-label">Your Name</label>
+        <input type="text" id="name" placeholder="e.g. Priya Sharma" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cake Type / Flavor</label>
+        <input type="text" id="cake" placeholder="e.g. Chocolate Truffle 1kg" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Delivery Date</label>
+        <input type="date" id="date" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Your Location / Address</label>
+        <input type="text" id="location" placeholder="e.g. Nizamabad, Telangana" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference Images (Optional)</label>
+        <div class="file-upload-area" onclick="document.getElementById('refImages').click()">
+          <div class="upload-icon">📷</div>
+          <p>Tap to upload reference photos</p>
+          <p style="font-size:11px;margin-top:4px;">JPG, PNG, WEBP up to 10MB each</p>
+          <div id="file-names"></div>
+          <input type="file" id="refImages" multiple accept="image/*" onchange="handleFileSelect(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Special Instructions</label>
+        <textarea id="message" placeholder="e.g. Write 'Happy Birthday Rahul' on top, less sweet please…"></textarea>
+      </div>
+      <button type="submit" class="send-btn ripple-container">
+        📲 Send Order on WhatsApp
+      </button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Cake Venture 🎂</div>
+        <p class="footer-about">Every cake is a little piece of home. Freshly baked in small batches with love, our creations are all about simple, honest goodness.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Quick Links</div>
+        <a href="#menu" class="footer-link">Our Menu</a>
+        <a href="#order" class="footer-link">Custom Order</a>
+        <a href="#insta" class="footer-link">Instagram Gallery</a>
+      </div>
+      <div>
+        <div class="footer-heading">Get in Touch</div>
+        <div class="footer-contact">
+          <div>📞 <a href="tel:9908973951">9908973951</a></div>
+          <div>📧 <a href="mailto:hello.cakeventure@gmail.com">hello.cakeventure@gmail.com</a></div>
+          <div style="margin-top:8px;">Jayadeepika estates, Near BVRIT women's college, Nizampet, Telangana</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © 2025 Cake Venture · Made with 🧡 &amp; a lot of butter
+    </div>
+  </footer>
+
+  <!-- CART OVERLAY + PANEL -->
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div id="cart" class="cart-panel">
+    <div class="cart-header">
+      <h3>Your Cart 🛒</h3>
+      <button class="cart-close-btn" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total</span><span id="cart-total-val">₹0</span></div>
+      <button class="checkout-btn" onclick="checkout()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Checkout via WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ========== LOADER ==========
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 1900);
+    });
+
+    // ========== CUSTOM CURSOR ==========
+    const cursor = document.getElementById('cursor');
+    const follower = document.getElementById('cursor-follower');
+    let mx = 0, my = 0, fx = 0, fy = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateFollower() {
+      fx += (mx - fx) * 0.12;
+      fy += (my - fy) * 0.12;
+      follower.style.left = fx + 'px';
+      follower.style.top = fy + 'px';
+      requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+
+    // ========== FLOATING PARTICLES ==========
+    const emojis = ['🍰','🎂','✨','🍫','🧁','🍒','🎉','🌸','⭐'];
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.fontSize = (14 + Math.random() * 20) + 'px';
+      container.appendChild(p);
+    }
+
+    // ========== SCROLL REVEAL ==========
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(r => observer.observe(r));
+
+    // ========== HEADER SCROLL ==========
+    window.addEventListener('scroll', () => {
+      document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ========== COUNTER ANIMATION ==========
+    const counters = document.querySelectorAll('.stat-num');
+    const counterObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const target = +e.target.dataset.target;
+          let count = 0;
+          const step = Math.ceil(target / 40);
+          const t = setInterval(() => {
+            count = Math.min(count + step, target);
+            e.target.textContent = count + (target === 100 ? '%' : target > 10 ? '+' : '');
+            if (count >= target) clearInterval(t);
+          }, 30);
+          counterObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(c => counterObs.observe(c));
+
+    // ========== RIPPLE ==========
+    document.querySelectorAll('.ripple-container').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = this.getBoundingClientRect();
+        r.style.left = (e.clientX - rect.left) + 'px';
+        r.style.top = (e.clientY - rect.top) + 'px';
+        this.appendChild(r);
+        setTimeout(() => r.remove(), 700);
+      });
+    });
+
+    // ========== CART ==========
+    let cart = [];
+
+    function toggleCart() {
+      const panel = document.getElementById('cart');
+      const overlay = document.getElementById('cart-overlay');
+      panel.classList.toggle('open');
+      overlay.classList.toggle('active');
+    }
+
+    // ========== QUANTITY ==========
+    function qty(id, val) {
+      const el = document.getElementById(id);
+      let v = parseInt(el.textContent) + val;
+      if (v < 1) v = 1;
+      el.textContent = v;
+    }
+
+    // ========== ADD TO CART ==========
+    function add(name, emoji, selectId, qtyId) {
+      const price = parseInt(document.getElementById(selectId).value);
+      const q = parseInt(document.getElementById(qtyId).textContent);
+      const selectEl = document.getElementById(selectId);
+      const sizeLabel = selectEl.options[selectEl.selectedIndex].text.split('—')[0].trim();
+
+      const key = name + '|' + price + '|' + sizeLabel;
+      const existing = cart.find(i => i.key === key);
+
+      if (existing) {
+        existing.qty += q;
+      } else {
+        cart.push({ key, name, emoji, price, qty: q, sub: sizeLabel });
+      }
+
+      playChime();
+      showToast(`${emoji} ${name} added!`);
+      renderCart();
+    }
+
+    // Brownies special add
+    function addBrownie() {
+      const type = document.getElementById('brownie-type-val').value;
+      const price = parseInt(document.getElementById('brownie').value);
+      const q = parseInt(document.getElementById('brownieQty').textContent);
+      const selectEl = document.getElementById('brownie');
+      const pcsLabel = selectEl.options[selectEl.selectedIndex].text.split('—')[0].trim();
+      const name = type + ' Brownie';
+      const key = name + '|' + price + '|' + pcsLabel;
+
+      const existing = cart.find(i => i.key === key);
+      if (existing) existing.qty += q;
+      else cart.push({ key, name, emoji: '🍫', price, qty: q, sub: `${type} · ${pcsLabel}` });
+
+      playChime();
+      showToast(`🍫 ${name} (${pcsLabel}) added!`);
+      renderCart();
+    }
+
+    // Cake Pops special add — shows flavor in cart
+    function addCakePop() {
+      const selectEl = document.getElementById('pop');
+      const price = parseInt(selectEl.value);
+      const q = parseInt(document.getElementById('popQty').textContent);
+      const flavor = selectEl.options[selectEl.selectedIndex].getAttribute('data-flavor');
+      const name = flavor + ' Cake Pop';
+      const key = name + '|' + price;
+
+      const existing = cart.find(i => i.key === key);
+      if (existing) existing.qty += q;
+      else cart.push({ key, name, emoji: '🍭', price, qty: q, sub: `${flavor} flavour · ₹${price} each` });
+
+      playChime();
+      showToast(`🍭 ${flavor} Cake Pop added!`);
+      renderCart();
+    }
+
+    function selectBrownieType(type) {
+      document.getElementById('brownie-type-val').value = type;
+      document.getElementById('bt-crinkle').classList.toggle('active', type === 'Crinkle Top');
+      document.getElementById('bt-fudgy').classList.toggle('active', type === 'Fudgy');
+    }
+
+    // ========== RENDER CART ==========
+    function renderCart() {
+      const container = document.getElementById('cart-items');
+      container.innerHTML = '';
+
+      if (cart.length === 0) {
+        container.innerHTML = `<div class="cart-empty"><span>🛒</span>Your cart is empty</div>`;
+        document.getElementById('cart-total-val').textContent = '₹0';
+        document.getElementById('cart-count').textContent = '0';
+        return;
+      }
+
+      let total = 0;
+      cart.forEach((item, i) => {
+        total += item.price * item.qty;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <div class="cart-item-emoji">${item.emoji}</div>
+          <div class="cart-item-details">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-sub">${item.sub || ''}</div>
+            <div class="cart-item-price">₹${item.price * item.qty}</div>
+            <div class="cart-item-controls">
+              <button class="cc-btn" onclick="changeCartQty(${i},-1)">−</button>
+              <span class="cc-qty">${item.qty}</span>
+              <button class="cc-btn" onclick="changeCartQty(${i},1)">+</button>
+              <button class="rm-btn" onclick="removeFromCart(${i})">Remove</button>
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('cart-total-val').textContent = '₹' + total;
+      document.getElementById('cart-count').textContent = cart.reduce((a, b) => a + b.qty, 0);
+    }
+
+    function changeCartQty(i, val) {
+      cart[i].qty += val;
+      if (cart[i].qty <= 0) cart.splice(i, 1);
+      renderCart();
+    }
+
+    function removeFromCart(i) {
+      cart.splice(i, 1);
+      renderCart();
+    }
+
+    // ========== CHECKOUT ==========
+    function checkout() {
+      if (cart.length === 0) { showToast('🛒 Your cart is empty!'); return; }
+      let total = cart.reduce((a, b) => a + b.price * b.qty, 0);
+      let msg = 'Hello! I\'d like to place an order:%0A%0A';
+      cart.forEach(i => {
+        msg += `${i.emoji} *${i.name}* (${i.sub || ''}) x${i.qty} = ₹${i.price * i.qty}%0A`;
+      });
+      msg += `%0A*Total: ₹${total}*%0A%0APlease confirm availability. Thank you! 🙏`;
+      window.open(`https://wa.me/919908973951?text=${msg}`);
+    }
+
+    // ========== MANUAL ORDER ==========
+    function handleFileSelect(input) {
+      const names = Array.from(input.files).map(f => f.name);
+      document.getElementById('file-names').textContent = names.length
+        ? `📎 ${names.length} file(s): ${names.join(', ')}`
+        : '';
+    }
+
+    function sendManualOrder() {
+      const name     = document.getElementById('name').value.trim();
+      const cake     = document.getElementById('cake').value.trim();
+      const date     = document.getElementById('date').value;
+      const location = document.getElementById('location').value.trim();
+      const message  = document.getElementById('message').value.trim();
+      const files    = document.getElementById('refImages').files;
+      const fileCount = files.length;
+
+      let msg = `Hello! I'd like to place a *custom order*:%0A%0A`;
+      msg += `👤 *Name:* ${name}%0A`;
+      msg += `🎂 *Cake:* ${cake}%0A`;
+      msg += `📅 *Date:* ${date}%0A`;
+      msg += `📍 *Location:* ${location}%0A`;
+      if (message) msg += `💬 *Message:* ${message}%0A`;
+      if (fileCount > 0) {
+        msg += `%0A📷 *Reference Images:* ${fileCount} image(s) attached (${Array.from(files).map(f => f.name).join(', ')})%0A`;
+        msg += `_(Please note: Images cannot be sent via this link. I will share them separately on WhatsApp after messaging.)_%0A`;
+      }
+      msg += `%0AThank you! 🙏`;
+
+      window.open(`https://wa.me/919908973951?text=${msg}`);
+    }
+
+    // ========== TOAST ==========
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(t._timeout);
+      t._timeout = setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // ========== CHIME ==========
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1050, ctx.currentTime + 0.07);
+        osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.18);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.22);
+      } catch(e) {}
+    }
+
+    // init
+    renderCart();
+  </script>
+</body>
+</html>
